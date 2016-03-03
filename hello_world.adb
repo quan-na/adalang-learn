@@ -81,28 +81,28 @@ begin
    -- why goto is kept?
    goto A_Label;
    Put_Line("This line is not called.");
-   <<A_Label>>
+<<A_Label>>
    
    -- while loop
    X := 1;
-While_Loop:
+While_Loop :
     while X < 5 loop
        X := X + 1;
     end loop While_Loop;
    -- repeat loop
     X := 1;
-Until_Loop:
+Until_Loop :
     loop
        X := X + 1;
        exit Until_Loop when X > 5;
     end loop Until_Loop;
     -- for loop
-For_Loop:
+For_Loop :
     for I in Integer range 1..19 loop
        IntIO.Put( I );
     end loop For_Loop;
     -- array loop
-Array_Loop:
+Array_Loop :
     for I in An_Array'Range loop
        IntIO.Put( I );
     end loop Array_Loop;
