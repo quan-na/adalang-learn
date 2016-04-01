@@ -1,0 +1,6 @@
+[package]
+name = "syntax_tries"
+version = "0.1.0"
+authors = ["QuanNA <naquan2112@gmail.com>"]
+
+[dependencies]
