@@ -1,7 +1,7 @@
 fn main() {
-    val_demo();
-    a_function();
-    diverge();
+    //val_demo();
+    //a_function();
+    //diverge();
 }
 
 // + Variable bindings
@@ -132,4 +132,53 @@ fn if_demo() {
     } else {
         15
     }; // y: i32
+}
+
+// + loop
+fn loop_demo() {
+    // + + !infinite loop
+    loop {
+        // + + till ?break
+        break;
+    }
+    // + + while
+    let mut x = 5; // mut x: i32
+    let mut done = false; // mut done: bool
+
+    while !done {
+        x += x - 3;
+
+        println!("{}", x);
+
+        if x % 5 == 0 {
+            done = true;
+        }
+    }
+    // + + for
+    // + + + ?iterator
+    for x in 0..10 {
+        println!("{}", x); // x: i32
+    }
+    // + + + ?enumerate
+    for (i,j) in (5..10).enumerate() {
+        println!("i = {} and j = {}", i, j);
+    }
+    // + + break, continue
+    let mut x = 5;
+
+    loop {
+        x += x - 3;
+
+        println!("{}", x);
+
+        if x % 5 == 0 { break; }
+    }
+    // + + loop labels
+    'outer: for x in 0..10 {
+        'inner: for y in 0..10 {
+            if x % 2 == 0 { continue 'outer; } // continues the loop over x
+            if y % 2 == 0 { continue 'inner; } // continues the loop over y
+            println!("x: {}, y: {}", x, y);
+        }
+    }
 }
