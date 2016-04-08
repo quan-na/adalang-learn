@@ -121,11 +121,11 @@ fn if_demo() {
     } else {
         println!( "No!" );
     }
-    // + + ?elseif
+    // + + ?else if
     if x == 5 {
         println!( "Thank god!" );
     } else if x == 6 {
-        println!( "Thank flying spagetty!" );
+        println!( "Thank flying spaghetti!" );
     } else {
         println!( "Thank Obama!" );
     }
@@ -146,7 +146,7 @@ fn loop_demo() {
     }
     // + + while
     let mut x = 5; // mut x: i32
-    let mut done = false; // mut done: bool
+    let mut done = false; // mut done: boolean
 
     while !done {
         x += x - 3;
@@ -421,6 +421,7 @@ fn match_demo() {
         _ => "something else",
     };
     // + + with enumerate
+    let msg : Message = Message::Quit; // ?how assign Write with String
     match msg {
         Message::Quit => quit(),
         Message::ChangeColor(r, g, b) => change_color(r, g, b),
@@ -432,3 +433,163 @@ fn match_demo() {
 fn quit() { /* ... */ }
 fn change_color(r: i32, g: i32, b: i32) { /* ... */ }
 fn move_cursor(x: i32, y: i32) { /* ... */ }
+
+// + pattern
+fn pattern_explain() {
+    // + + literal
+    let x = 1;
+
+    match x {
+        1 => println!("one"),
+        2 => println!("two"),
+        3 => println!("three"),
+        _ => println!("anything"),
+    }
+    // + + shadowing
+    let c = 'c';
+
+    match c {
+        x => println!("x: {} c: {}", x, c),
+    }
+
+    println!("x: {}", x);
+    // + + multiple patterns
+    match x {
+        1 | 2 => println!("one or two"),
+        3 => println!("three"),
+        _ => println!("anything"),
+    }
+    // + + de-structuring
+    let origin = Point { x: 0, y: 0 };
+
+    match origin {
+        Point { x, y } => println!("({},{})", x, y),
+    }
+    // + + + giving de-structured value a name
+    match origin {
+        Point { x: x1, y: y1 } => println!("({},{})", x1, y1),
+    }
+    // + + + omit some values
+    match origin {
+        Point { y, .. } => println!("y is {}", y),
+    }
+    // + + omit one or some
+    let (x, _, z) = coordinate();
+    let x = OptionalTuple::Value(5, -2, 3);
+    match x {
+        OptionalTuple::Value(..) => println!("Got a tuple!"),
+        OptionalTuple::Missing => println!("No such luck."),
+    }
+    // + + ?reference
+    let x = 5;
+    match x {
+        ref r => println!("Got a reference to {}", r),
+    }
+
+    let mut x = 5;
+    match x {
+        ref mut mr => println!("Got a mutable reference to {}", mr),
+    }
+    // + + range
+    let x = 1;
+    match x {
+        1 ... 5 => println!("one through five"),
+        _ => println!("anything"),
+    }
+
+    let x = 'z';
+    match x {
+        'a' ... 'j' => println!("early letter"),
+        'k' ... 'z' => println!("late letter"),
+        _ => println!("something else"),
+    }
+    // + + binding
+    let x = 1;
+    match x {
+        e @ 1 ... 5 => println!("got a range element {}", e),
+        _ => println!("anything"),
+    }
+    // + + binding with multiple patterns
+    match x {
+        e @ 1 ... 5 | e @ 8 ... 10 => println!("got a range element {}", e),
+        _ => println!("anything"),
+    }
+    // + + match guards
+    let x = OptionalTuple::Value(5,1,2);
+    match x {
+        OptionalTuple::Value(i, _, _) if i > 5 => println!("Got an int bigger than five!"),
+        OptionalTuple::Value(..) => println!("Got an integer!"),
+        OptionalTuple::Missing => println!("No such luck."),
+    }
+    // 'if' has lower priority than '|'
+}
+
+fn coordinate() -> (i32, i32, i32) {
+    // generate and return some sort of triple tuple
+    (1, 2, 3)
+}
+
+enum OptionalTuple {
+    Value(i32, i32, i32),
+    Missing,
+}
+
+// + method syntax
+fn method_explain() {
+    // chaining method calls
+    let c = Circle { x: 0.0, y: 0.0, radius: 2.0 };
+    let d = c.grow(2.0).area();
+    // associated function as constructor
+    let c = Circle::new(0.0, 0.0, 2.0);
+}
+
+struct Circle {
+    x: f64,
+    y: f64,
+    radius: f64,
+}
+
+// + + implement block
+impl Circle {
+    fn reference(&self) {
+       println!("taking self by reference!");
+    }
+
+    fn mutable_reference(&mut self) {
+       println!("taking self by mutable reference!");
+    }
+}
+
+// + + multiple implement block
+impl Circle {
+    fn takes_ownership(self) {
+       println!("taking ownership of self!");
+    }
+}
+
+// + + chaining method call
+impl Circle {
+    fn area(&self) -> f64 {
+        std::f64::consts::PI * (self.radius * self.radius)
+    }
+
+    fn grow(&self, increment: f64) -> Circle {
+        Circle { x: self.x, y: self.y, radius: self.radius + increment }
+    }
+}
+
+// + + associated function
+impl Circle {
+    fn new(x: f64, y: f64, radius: f64) -> Circle {
+        Circle {
+            x: x,
+            y: y,
+            radius: radius,
+        }
+    }
+}
+// can implement ?builder pattern with this
+
+// + vector
+fn vector_explain() {
+}
