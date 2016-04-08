@@ -1,3 +1,6 @@
+use std::sync::Arc;
+use std::cell::Cell;
+
 fn main() {
     //val_demo();
     //a_function();
@@ -85,7 +88,7 @@ fn primitive_types() {
     let mut x = (1, 2); // x: (i32, i32)
     let y = (2, 3); // y: (i32, i32)
     x = y;
-    // + + + ?destructure
+    // + + + ?de-structure
     let (x, y, z) = (1, 2, 3);
     println!("x is {}", x);
     // + + + tuple vs value in ()
@@ -181,4 +184,161 @@ fn loop_demo() {
             println!("x: {}, y: {}", x, y);
         }
     }
+}
+
+// + ownership
+// -> ?borrowing, -> ?lifetime
+fn ownership_explain() {
+    // variable bindings have ownership
+    let v = vec![1, 2, 3];
+    // when come into scope, heap space is allocated
+    // the memory space will be destroyed after it is out of scope
+    // Rust ensure there 's !exactly one binding at a time for each resource
+    // the new binding will take ?ownership of the resource
+    let v2 = v;
+    // after this line, usage of v will cause 'use of moved value' error
+    // the same ownership taking happens if a function is called
+    take(v2);
+    // v2 is taken, can not use it now
+
+    // there 's a trait called Copy
+    // types that implemented it will not be ownership taken
+    let v = 1;
+    let v2 = v;
+    println!("v is: {}", v);
+    // fortunately, all primitive types implement Copy trait
+    // types that have external pointer will not implement it by default
+
+    // putting ownership back is tedious, borrowing is used for this purpose
+    let v1 = vec![1, 2, 3];
+    let v2 = vec![1, 2, 3];
+
+    let (v1, v2, answer) = foo(v1, v2);
+}
+
+fn take(v: Vec<i32>) {
+    // the function detail is not importance
+    // just passed the parameter, and it is taken
+}
+
+fn foo(v1: Vec<i32>, v2: Vec<i32>) -> (Vec<i32>, Vec<i32>, i32) {
+    // do stuff with v1 and v2
+    // hand back ownership, and the result of our function
+    (v1, v2, 42)
+}
+
+// + borrowing
+fn borrowing_explain() {
+    // + + reference
+    let v1 = vec![1, 2, 3];
+    let v2 = vec![1, 2, 3];
+
+    let answer = foo_with_ref(&v1, &v2);
+    // we can use v1 and v2 here!
+
+    // + + mut reference
+    let mut x = 5;
+    {
+        let y = &mut x;
+        *y += 1;
+    }
+    println!("{}", x);
+    // ! ! ! notice the block scope
+    // at one time, there may be either, but not both
+    // - multiple immutable references
+    // - exactly 1 mutable reference
+}
+
+fn foo_with_ref(v1: &Vec<i32>, v2: &Vec<i32>) -> i32 {
+    // do stuff with v1 and v2
+    // ! ! ! references are immutable
+    // v1.push(5); // will cause error
+
+    // return the answer
+    42
+}
+
+// + lifetimes
+fn lifetimes_explain() {
+    // ?zero-cost abstraction
+}
+
+// + + implicit lifetime
+fn foo_implicit_lifetime(x: &i32) {
+}
+
+// + + explicit lifetime
+fn foo_explicit_lifetime<'a>(x: &'a i32, y: &'a mut i32) {
+}
+
+// + + in struct
+struct Foo<'a> {
+    x: &'a i32,
+}
+
+// + + in struct impl
+// impl<'a> declare, Foo<'a> use
+impl<'a> Foo<'a> {
+    fn x(&self) -> &'a i32 { self.x }
+}
+
+fn Foo_struct_demo() {
+    let y = &5; // this is the same as `let _y = 5; let y = &_y;`
+    let f = Foo { x: y };
+
+    println!("{}", f.x);
+    println!("{}", f.x());
+}
+
+// + + multiple lifetimes
+fn foo_multi_lifetime<'a, 'b>(x: &'a str, y: &'b str) -> &'a str {
+    "test"
+}
+
+// + mutability
+fn mut_explain() {
+    // + + immutable by default
+    let mut x = 5;
+    x = 6; // no problem!
+    // + + mutable reference
+    let y = &mut x;
+    *y = 5;
+    // + + mutable mutable reference
+    let mut z = 3;
+    let mut t = &mut z;
+    // part of a ?pattern
+    let (mut a, b) = (5, 6);
+    // + + ?interior vs ?exterior mutability
+    let x1 = Arc::new(5);
+    let y1 = x1.clone();
+    // + + field-level mutability
+    let mut a = Point { x: 5, y: 6 };
+    a.x = 10;
+    let b = Point { x: 5, y: 6};
+
+    let point = Mut_Point { x: 5, y: Cell::new(6) };
+    point.y.set(7);
+    println!("y: {:?}", point.y);
+}
+
+// + + Structures can not have mutable fields
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+// + + Field level mutability simulation with Cell
+struct Mut_Point {
+    x: i32,
+    y: Cell<i32>,
+}
+
+// + structure
+fn struct_explain() {
+    let origin = Point { x:0, y:0 };
+    println!("The origin is at ({}, {})", origin.x, origin.y);
+    // + + mutable
+    let mut a = Point { x:0, y:0 };
+    a.x = 5;
+    
 }
