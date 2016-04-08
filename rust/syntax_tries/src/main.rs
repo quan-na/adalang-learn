@@ -340,5 +340,61 @@ fn struct_explain() {
     // + + mutable
     let mut a = Point { x:0, y:0 };
     a.x = 5;
-    
+    // + + with references
+    let mut point = Point { x: 0, y: 0 };
+
+    {
+        let r = PointRef { x: &mut point.x, y: &mut point.y };
+
+        *r.x = 5;
+        *r.y = 6;
+    }
+
+    assert_eq!(5, point.x);
+    assert_eq!(6, point.y);
+    // + + update syntax
+    let origin = Point3d { x: 0, y: 0, z: 0 };
+    let point = Point3d { z: 1, x: 2, .. origin };
+    // + + tuple structure
+    let black = Color(0, 0, 0);
+    // + + new type pattern
+    struct Inches(i32);
+
+    let length = Inches(10);
+
+    let Inches(integer_length) = length;
+    println!("length is {} inches", integer_length);
+    // + + unit structure
+    let x = Electron;
+}
+
+struct PointRef<'a> {
+    x: &'a mut i32,
+    y: &'a mut i32,
+}
+
+struct Point3d {
+    x: i32,
+    y: i32,
+    z: i32,
+}
+
+struct Color(i32, i32, i32);
+
+struct Electron;
+
+// + enumerate
+enum Message {
+    Quit,
+    ChangeColor(i32, i32, i32),
+    Move { x: i32, y: i32 },
+    Write(String),
+}
+
+fn enum_demo() {
+    let x: Message = Message::Move { x: 3, y: 4 };
+    // + + enumerate can be unstructured with ?match
+    // + + enumerate constructor as ?function
+    let v = vec!["Hello".to_string(), "World".to_string()];
+    let v1: Vec<Message> = v.into_iter().map(Message::Write).collect();
 }
