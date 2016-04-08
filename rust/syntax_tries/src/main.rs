@@ -398,3 +398,37 @@ fn enum_demo() {
     let v = vec!["Hello".to_string(), "World".to_string()];
     let v1: Vec<Message> = v.into_iter().map(Message::Write).collect();
 }
+
+// + match
+fn match_demo() {
+    // + + ?normal usage
+    let x = 5;
+    match x {
+        1 => println!("one"),
+        2 => println!("two"),
+        3 => println!("three"),
+        4 => println!("four"),
+        5 => println!("five"),
+        _ => println!("something else"),
+    }
+    // + + as expression
+    let number = match x {
+        1 => "one",
+        2 => "two",
+        3 => "three",
+        4 => "four",
+        5 => "five",
+        _ => "something else",
+    };
+    // + + with enumerate
+    match msg {
+        Message::Quit => quit(),
+        Message::ChangeColor(r, g, b) => change_color(r, g, b),
+        Message::Move { x: x, y: y } => move_cursor(x, y),
+        Message::Write(s) => println!("{}", s),
+    };
+}
+
+fn quit() { /* ... */ }
+fn change_color(r: i32, g: i32, b: i32) { /* ... */ }
+fn move_cursor(x: i32, y: i32) { /* ... */ }
