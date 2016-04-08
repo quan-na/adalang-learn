@@ -592,4 +592,30 @@ impl Circle {
 
 // + vector
 fn vector_explain() {
+    // + + literal
+    let v = vec![1, 2, 3, 4, 5]; // v: Vec<i32>
+    // + + repeating
+    let v = vec![0; 10]; // ten zeroes
+    // + + accessing elements
+    let i: usize = 3;
+    println!("The {} element of v is {}", i, v[i]);
+    // + + out of bound panic
+    match v.get(7) {
+        Some(x) => println!("Item 7 is {}", x),
+        None => println!("Sorry, this vector is too short.")
+    }
+    // also : get_mut(i32)
+    // + + iterating
+    let mut v = vec![1, 2, 3, 4, 5];
+    for i in &v {
+        println!("A reference to {}", i);
+    }
+    for i in &mut v {
+        println!("A mutable reference to {}", i);
+    }
+    for i in v {
+        println!("Take ownership of the vector and its element {}", i);
+    }
 }
+
+// + string
