@@ -1,10 +1,9 @@
 use std::sync::Arc;
 use std::cell::Cell;
+use std::fmt::Debug;
 
 fn main() {
-    //val_demo();
-    //a_function();
-    //diverge();
+    drop_explain();
 }
 
 // + Variable bindings
@@ -619,3 +618,191 @@ fn vector_explain() {
 }
 
 // + string
+fn string_explain() {
+    // + + &str
+    let greeting = "Hello there.";
+    let greeting_with_newline = "Hello
+ there.";
+    let greeting_with_trimed_newline = "Hello \
+                                        there.";
+    // + + String
+    let mut mutable_greeting : String = "Hello".to_string();
+    mutable_greeting.push_str(", world.");
+    // + + ?coerce
+    let immutable_greeting : &str = &mutable_greeting;
+    // + + indexing
+    let hachiko = "忠犬ハチ公";
+    for b in hachiko.as_bytes() {
+        print!("{}, ", b);
+    }
+    println!("");
+    for c in hachiko.chars() {
+        print!("{}, ", c);
+    }
+    println!("");
+    let dog = hachiko.chars().nth(1); // ?Option(char)
+    // + + slicing
+    let dog = "hachiko";
+    let hachi = &dog[0..5]; // byte offsets, not character offset
+    // + + concatenate
+    let hello = "Hello ".to_string();
+    let world = "world!";
+    let hello_world = hello + world;
+
+    let hello = "Hello ".to_string();
+    let world = "world!".to_string();
+    let hello_world = hello + &world;
+}
+
+// + generic
+enum MyOption<T> {
+    Some(T),
+    None,
+}
+
+fn takes_anything<T, U>(x: T, y: U) {
+    // do something with x, y
+}
+
+struct GenericPoint<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> GenericPoint<T> {
+    fn swap(&mut self) {
+        std::mem::swap(&mut self.x, &mut self.y);
+    }
+}
+
+fn generic_explain() {
+    // + + with enumeration
+    let x : MyOption<i32> = MyOption::Some(5);
+    let y : MyOption<f64> = MyOption::Some(5.0f64);
+    // + + with function
+    takes_anything(x, y);
+    // + + with structure
+    let int_origin = GenericPoint { x: 0, y: 0 };
+    let float_origin = GenericPoint { x: 0.0, y: 0.0 };
+}
+
+// + traits
+trait HasArea {
+    fn area(&self) -> f64;
+}
+
+impl HasArea for Circle {
+    fn area(&self) -> f64 {
+        std::f64::consts::PI * (self.radius * self.radius)
+    }
+}
+
+// + + with function
+fn print_area<T: HasArea>(shape: T) {
+    println!("This shape has an area of {}", shape.area());
+}
+
+struct Rectangle<T> {
+    x: T,
+    y: T,
+    width: T,
+    height: T,
+}
+
+// + + with structure implementation
+impl<T: PartialEq> Rectangle<T> { // core::cmp::PartialEq
+    fn is_square(&self) -> bool {
+        self.width == self.height
+    }
+}
+
+// + + implement on primitive types
+// limitations:
+//  - the trait must be ?defined in current scope
+//  - either the trait or type is ?defined by you
+impl HasArea for i32 {
+    fn area(&self) -> f64 {
+        println!("this is silly");
+
+        *self as f64
+    }
+}
+
+// + + multiple traits
+fn foo_multi_trait<T: Clone + Debug> (x: T) {
+    x.clone();
+    println!("{:?}", x);
+}
+
+// + + with where
+fn bar_with_where<T, K>(x: T, y: K)
+    where T: Clone,
+          K: Clone + Debug {
+
+    x.clone();
+    y.clone();
+    println!("{:?}", y);
+}
+
+// + + ?generic trait
+trait ConvertTo<Output> {
+    fn convert(&self) -> Output;
+}
+
+impl ConvertTo<i64> for i32 {
+    fn convert(&self) -> i64 { *self as i64 }
+}
+
+fn inverse<T>() -> T
+        // this is using ConvertTo as if it were "ConvertTo<i64>"
+        where i32: ConvertTo<T> {
+    42.convert()
+}
+
+// + + default method
+trait FooWithDefault {
+    fn is_valid(&self) -> bool;
+    fn is_invalid(&self) -> bool { !self.is_valid() }
+}
+
+// + + ?inheritance
+trait FooParent {
+    fn foo(&self);
+}
+
+trait FooChild : FooParent {
+    fn foobar(&self);
+}
+
+// + + ?deriving
+#[derive(Debug)]
+struct FooWithDerive;
+// only available for these traits
+// Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd
+
+fn traits_demo() {
+    // implement on structure
+    let c = Circle {
+        x: 0.0f64,
+        y: 0.0f64,
+        radius: 1.0f64,
+    };
+    print_area(c);
+    // implement on primitive type
+    print_area(5);
+    // deriving a trait
+    println!("{:?}", FooWithDerive);
+}
+
+// + Drop trait
+struct HasDrop;
+
+impl Drop for HasDrop {
+    fn drop(&mut self) {
+        println!("Dropping!");
+    }
+}
+
+fn drop_explain() {
+    let x = HasDrop;
+}
