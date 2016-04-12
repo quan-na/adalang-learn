@@ -3,7 +3,7 @@ use std::cell::Cell;
 use std::fmt::Debug;
 
 fn main() {
-    drop_explain();
+    if_let_explain();
 }
 
 // + Variable bindings
@@ -803,6 +803,35 @@ impl Drop for HasDrop {
     }
 }
 
+struct Firework {
+    strength: i32,
+}
+
+impl Drop for Firework {
+    fn drop(&mut self) {
+        println!("BOOM times {}!!!", self.strength);
+    }
+}
+
 fn drop_explain() {
     let x = HasDrop;
+    // the ?order
+    let firecracker = Firework { strength: 1 };
+    let tnt = Firework { strength: 100 };
 }
+
+// + if let, while let
+fn if_let_explain() {
+    // + + if let
+    let option = Option::Some(100);
+    if let Some(x) = option {
+        println!("{}", x);
+    }
+    // + + while let
+    let mut v = vec![1, 3, 5, 7, 11];
+    while let Some(x) = v.pop() {
+        println!("{}", x);
+    }
+}
+
+// + Trait object
