@@ -3,7 +3,7 @@ use std::cell::Cell;
 use std::fmt::Debug;
 
 fn main() {
-    if_let_explain();
+    closure_explain();
 }
 
 // + Variable bindings
@@ -835,3 +835,83 @@ fn if_let_explain() {
 }
 
 // + Trait object
+trait SampleTrait {
+    fn method(&self) -> String;
+}
+
+impl SampleTrait for u8 {
+    fn method(&self) -> String { format!("u8: {}", *self) }
+}
+
+impl SampleTrait for String {
+    fn method(&self) -> String { format!("string: {}", *self) }
+}
+
+fn do_trait_object_ref(x: &SampleTrait) -> String {
+    x.method()
+}
+
+fn trait_object_explain() {
+    // + + dynamic dispatch
+    let x = 5u8;
+    println!("{}", do_trait_object_ref(&x));
+    let x = "Hell no!!".to_string();
+    println!("{}", do_trait_object_ref(&x));
+    // + + object-safe
+    // - does not require that ?`Self: Sized`
+    // - all of its methods are ?object-safe:
+    // - - must not have any ?type parameters
+    // - - must not use ?Self
+}
+
+// + closure
+fn closure_explain() {
+    // + + syntax
+    let plus_one = |x: i32| x + 1;
+    println!("{}", plus_one(8));
+    // + + with {} and return type
+    let plus_two = |x| -> i32 {
+        let mut result: i32 = x;
+
+        result += 1;
+        result += 1;
+
+        result
+    };
+    println!("{}", plus_two(2));
+    // + + ?borrowing environment
+    let mut num = 5;
+    let plus_num = |x : i32| x + num;
+    println!("{}", plus_num(5)); // let y = &mut num; will cause ?error
+    // + + ?move
+    let mut num = 5;
+    {
+        let mut add_num = move |x: i32| num += x;
+        add_num(5);
+    }
+    println!("this should print 5 instead of 10 : {}", num);
+    // + + closure are actually trait object ?syntax candy
+    println!("{}", call_with_one(|x| x + 2));
+    println!("{}", call_with_two(&|x| x + 2));
+    // + + function pointer is like closure without environment
+    println!("{}", call_with_one(&add_one));
+    // + + returning closure
+    println!("this should be 11 : {}", factory()(6));
+}
+
+fn call_with_one<F>(some_closure: F) -> i32
+    where F : Fn(i32) -> i32 {
+    some_closure(1)
+}
+
+fn call_with_two(some_closure: &Fn(i32) -> i32) -> i32 {
+    some_closure(2)
+}
+
+// + + returning closure
+fn factory() -> Box<Fn(i32) -> i32> { // closures are traits, need boxing
+    let num = 5;
+    Box::new(move |x| x + num) // make sure to move to create new stack frame
+}
+
+// + Universal Function Call Syntax
