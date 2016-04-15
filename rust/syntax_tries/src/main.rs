@@ -4,6 +4,7 @@ use std::fmt::Debug;
 
 fn main() {
     closure_explain();
+    universal_function_call_explain();
 }
 
 // + Variable bindings
@@ -915,3 +916,40 @@ fn factory() -> Box<Fn(i32) -> i32> { // closures are traits, need boxing
 }
 
 // + Universal Function Call Syntax
+// + + functions with same name
+trait SameNameOne {
+    fn f(&self);
+    fn forig() -> i32;
+}
+
+trait SameNameTwo {
+    fn f(&self);
+}
+
+struct Baz;
+
+impl SameNameOne for Baz {
+    fn f(&self) { println!("Same name one implemented."); }
+    fn forig() -> i32 { 10 }
+}
+
+impl SameNameTwo for Baz {
+    fn f(&self) { println!("Same name two implemented."); }
+}
+
+impl Baz {
+    fn forig() -> i32 { 20 }
+}
+
+fn universal_function_call_explain() {
+    let b = Baz;
+    // + same names in traits
+    SameNameOne::f(&b);
+    SameNameTwo::f(&b);
+    // + same names between trait and structure implementation
+    println!("10 : {}", <Baz as SameNameOne>::forig());
+    println!("20 : {}", Baz::forig());
+}
+
+// + crates and modules
+// --> see another project : phrases
