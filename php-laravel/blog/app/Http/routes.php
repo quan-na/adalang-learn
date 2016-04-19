@@ -14,3 +14,27 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/hello/{name}', function ($name) {
+    echo 'Hello ' . $name . '!';
+});
+
+Route::get('/customer/{id}', function ($id) {
+    $customer = App\Customer::find($id);
+    //echo '<pre>';
+    //print_r($customer);
+    //echo '</pre>';
+    echo $customer->name . '<br/>';
+    echo "Orders : <br/> <ul>";
+    foreach ($customer->orders as $order) {
+        echo "<li>". $order->name . "</li>";
+    }
+    echo "</ul>";
+});
+
+Route::get('/orders', function () {
+    $orders = App\Order::all();
+    foreach($orders as $order) {
+        echo $order->name . " by " . $order->customer->name . "<br/>";
+    }
+});
