@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::cell::Cell;
 use std::fmt::Debug;
+use std::result;
 
 // + + crate importing
 extern crate phrases;
@@ -970,7 +971,7 @@ fn modules_explain() {
 // + constance and static
 const A_CONST: i32 = 100;
 
-static A_STATIC: i32 = 5;
+static mut A_STATIC: i32 = 5;
 
 fn const_n_static_explain() {
     println!("They all must have type and value assigned from start.");
@@ -979,5 +980,34 @@ fn const_n_static_explain() {
     unsafe {
         A_STATIC = A_CONST;
         println!("static value = {}", A_STATIC);
+    }
+}
+
+// + attribute
+#[test]
+fn a_test_function() {}
+
+struct AAttributeModifiedStruct;
+
+impl AAttributeModifiedStruct {
+    #![warn(non_camel_case_types)]
+    fn test() {}
+}
+
+// + type aliases
+type Num = i32;
+
+enum ConcreteError {
+    Foo,
+    Bar,
+}
+
+type Result<T> = result::Result<T, ConcreteError>;
+
+fn type_alias_explain() {
+    let x : Num = 6;
+    let y : i32 = 9;
+    if x == y {
+        println!("This appeared to be OK.");
     }
 }
