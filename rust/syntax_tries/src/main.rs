@@ -966,3 +966,18 @@ fn modules_explain() {
     // + + farewells is made visible
     println!("Goodbye in English: {}", farewells::goodbye());
 }
+
+// + constance and static
+const A_CONST: i32 = 100;
+
+static A_STATIC: i32 = 5;
+
+fn const_n_static_explain() {
+    println!("They all must have type and value assigned from start.");
+    println!("Constance has no address and exists only at compile time.");
+    println!("Static assignment must be inside an unsafe block.");
+    unsafe {
+        A_STATIC = A_CONST;
+        println!("static value = {}", A_STATIC);
+    }
+}
