@@ -2,9 +2,16 @@ use std::sync::Arc;
 use std::cell::Cell;
 use std::fmt::Debug;
 
+// + + crate importing
+extern crate phrases;
+
+// + + make module name visible in scope
+use phrases::english::farewells;
+
 fn main() {
-    closure_explain();
-    universal_function_call_explain();
+    //closure_explain();
+    //universal_function_call_explain();
+    modules_explain();
 }
 
 // + Variable bindings
@@ -953,3 +960,9 @@ fn universal_function_call_explain() {
 
 // + crates and modules
 // --> see another project : phrases
+fn modules_explain() {
+    // + + greetings is not yet made visible
+    println!("Hello in English: {}", phrases::english::greetings::hello());
+    // + + farewells is made visible
+    println!("Goodbye in English: {}", farewells::goodbye());
+}

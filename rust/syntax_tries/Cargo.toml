@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["QuanNA <naquan2112@gmail.com>"]
 
 [dependencies]
+phrases = { version = "0.1.0", path = "../phrases" }
