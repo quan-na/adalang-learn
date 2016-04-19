@@ -38,3 +38,22 @@ Route::get('/orders', function () {
         echo $order->name . " by " . $order->customer->name . "<br/>";
     }
 });
+
+Route::get('sample_view', function() {
+    $data = array(
+        'var1' => 'Hamburger',
+        'var2' => 'Hot Dog',
+        'var3' => 'Ninja'
+    );
+    return view('sample_view', $data);
+});
+
+Route::get('sample_blade', function() {
+    $data = array(
+        'var1' => 'Hamburger',
+        'var2' => 'Hot Dog',
+        'var3' => 'Ninja',
+        'orders' => App\Order::all()
+    );
+    return view('sample_blade', $data);
+});
