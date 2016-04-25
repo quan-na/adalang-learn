@@ -11,6 +11,11 @@
 |
 */
 
+/* Authentication created with:
+   php artisan make:auth
+   php artisan migrate
+   the later command execute the SQL statements
+ */
 Route::get('/', function () {
     return view('welcome');
 });
@@ -19,18 +24,7 @@ Route::get('/hello/{name}', function ($name) {
     echo 'Hello ' . $name . '!';
 });
 
-Route::get('/customer/{id}', function ($id) {
-    $customer = App\Customer::find($id);
-    //echo '<pre>';
-    //print_r($customer);
-    //echo '</pre>';
-    echo $customer->name . '<br/>';
-    echo "Orders : <br/> <ul>";
-    foreach ($customer->orders as $order) {
-        echo "<li>". $order->name . "</li>";
-    }
-    echo "</ul>";
-});
+Route::get('/customer/{id}', 'CustomerController@customer');
 
 Route::get('/orders', function () {
     $orders = App\Order::all();
@@ -57,3 +51,7 @@ Route::get('sample_blade', function() {
     );
     return view('sample_blade', $data);
 });
+
+Route::auth();
+
+Route::get('/home', 'HomeController@index');
