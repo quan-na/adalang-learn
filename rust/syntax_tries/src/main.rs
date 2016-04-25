@@ -2,6 +2,7 @@ use std::sync::Arc;
 use std::cell::Cell;
 use std::fmt::Debug;
 use std::result;
+use std::mem;
 
 // + + crate importing
 extern crate phrases;
@@ -1009,5 +1010,23 @@ fn type_alias_explain() {
     let y : i32 = 9;
     if x == y {
         println!("This appeared to be OK.");
+    }
+}
+
+// + type casting
+fn type_cast_explain() {
+    // removing mutability from reference
+    let mut x : i32 = 100;
+    let y = &mut x;
+    let z : &i32 = y;
+    // ?other coercions
+
+    // as
+    let x : i32 = 5;
+    let y = x as i64;
+    // transmute
+    unsafe {
+        let a = [0u8, 0u8, 0u8, 0u8];
+        let b = mem::transmute::<[u8; 4], u32>(a);
     }
 }
