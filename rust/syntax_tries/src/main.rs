@@ -1030,3 +1030,50 @@ fn type_cast_explain() {
         let b = mem::transmute::<[u8; 4], u32>(a);
     }
 }
+
+// + associated type
+trait Graph {
+    type N;
+    type E;
+
+    fn has_edge(&self, &Self::N, &Self::N) -> bool;
+    fn edges(&self, &Self::N) -> Vec<Self::E>;
+}
+
+struct Node;
+
+struct Edge;
+
+struct MyGraph;
+
+impl Graph for MyGraph {
+    type N = Node;
+    type E = Edge;
+
+    fn has_edge(&self, n1: &Node, n2: &Node) -> bool {
+        true
+    }
+
+    fn edges(&self, n: &Node) -> Vec<Edge> {
+        Vec::new()
+    }
+}
+
+fn associate_type_explain() {
+    let graph = MyGraph;
+    let obj = Box::new(graph) as Box<Graph<N=Node, E=Edge>>;
+}
+
+// + unsized types ?
+// + operator overloading ?
+// + dereference coercions ?
+// + macros ?
+macro_rules! five_times {
+    ($x:expr) => (5 * $x);
+}
+
+fn macro_explain() {
+    assert_eq!(25, five_times!(2 + 3));
+}
+// + raw pointers ?
+// + unsafe ?
