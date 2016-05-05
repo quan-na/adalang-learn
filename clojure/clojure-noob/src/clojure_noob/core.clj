@@ -161,6 +161,7 @@
     (str "OH. MY. GOD! " name " YOU ARE MOST DEFINITELY LIKE THE BEST "
          "MAN SLASH WOMAN EVER I LOVE YOU AND WE SHOULD RUN AWAY SOMEWHERE")) ; function body
 
+  ;; multiple arity
   (defn multi-arity
     ;; 3-arity arguments and body
     ([first-arg second-arg third-arg]
@@ -172,6 +173,7 @@
     ([first-arg]
      (+ first-arg)))
 
+  ;; default parameter
   (defn x-chop
     "Describe the kind of chop you're inflicting on someone"
     ([name chop-type]
@@ -179,6 +181,7 @@
     ([name]
      (x-chop name "karate")))
 
+  ;; parameter list with &
   (defn codger-communication
     [whippersnapper]
     (str "Get off my lawn, " whippersnapper "!!!"))
@@ -190,6 +193,7 @@
   ;;     "Get off my lawn, Anne-Marie!!!"
   ;;     "Get off my lawn, The Incredible Bulk!!!")
 
+  ;; matching items at beginning of the list
   (defn favorite-things
     [name & things]
     (str "Hi, " name ", here are my favorite things: "
@@ -202,6 +206,7 @@
     first-thing)
   (my-first ["oven" "bike" "war-axe"]) ; => "oven"
 
+  ;; matching multiple items at beginning of the collection
   (defn chooser
     [[first-choice second-choice & unimportant-choices]]
     (println (str "Your first choice is: " first-choice))
@@ -215,6 +220,7 @@
   ;; => Your second choice is: Handsome Jack
   ;; => We're ignoring the rest of your choices. Here they are in case you need to cry over them: Pigpen, Aquaman
 
+  ;; map pattern matching
   (defn announce-treasure-location
     [{lat :lat lng :lng}]
     (println (str "Treasure lat: " lat))
@@ -223,6 +229,7 @@
   ;; => Treasure lat: 100
   ;; => Treasure lng: 50
 
+  ;; matching with key same name as variable
   (defn steer-ship! [loc] loc)
   (defn receive-treasure-location
     [{:keys [lat lng] :as treasure-location}]
@@ -231,14 +238,17 @@
     ;; One would assume that this would put in new coordinates for your ship
     (steer-ship! treasure-location))
 
+  ;; anonymous function
   (map (fn [name] (str "Hi, " name))
        ["Darth Vader" "Mr. Magoo"])
   ;; => ("Hi, Darth Vader" "Hi, Mr. Magoo")
   ((fn [x] (* x 3)) 8)
   ;; => 24
 
+  ;; used with define -> as replacement for defn
   (def my-special-multiplier (fn [x] (* x 3)))
 
+  ;; even shorter syntax
   (#(* % 3) 8)
   ;; => 24
   (map #(str "Hi, " %)
@@ -249,13 +259,90 @@
   (#(identity %&) 1 "blarg" :yip)
   ;; => (1 "blarg" :yip)
 
+  ;; return a function (closure)
   (defn inc-maker
-  "Create a custom incrementor"
+  "Create a custom increment function"
     [inc-by]
     #(+ % inc-by))
   (def inc3 (inc-maker 3))
   (inc3 7)
   ;; => 10
 
-  
+  ;; 'let' start new scope
+  (def x 0)
+  (let [x 1] x)
+  ;; => 1
+
+  ;; use with pattern matching
+  (def dalmatian-list
+    ["Pongo" "Perdita" "Puppy 1" "Puppy 2"])
+  (let [[pongo & dalmatians] dalmatian-list]
+    [pongo dalmatians])
+  ;; => ["Pongo" ("Perdita" "Puppy 1" "Puppy 2")]
+
+  ;; 'loop' is not-so-short syntax for recursive
+  (loop [iteration 0]
+    (println (str "Iteration " iteration))
+    (if (> iteration 3)
+      (println "Goodbye!")
+      (recur (inc iteration))))
+  ;; => Iteration 0
+  ;; => Iteration 1
+  ;; => Iteration 2
+  ;; => Iteration 3
+  ;; => Iteration 4
+  ;; => Goodbye!
+
+  ;; regular expression
+  (re-find #"^left-" "left-eye")
+  ;; => "left-"
+
+  (defn matching-part
+    [part]
+    {:name (clojure.string/replace (:name part) #"^left-" "right-")
+     :size (:size part)})
+  (matching-part {:name "left-eye" :size 1})
+  ;; => {:name "right-eye" :size 1}]
+
+  ;; reduce
+  ;; sum with reduce
+  (reduce + [1 2 3 4])
+  ;; => 10
+
+  ;; structure response to first, rest, and cons will response to sequential functions
+  (defn titleize
+    [topic]
+    (str topic " for the Brave and True"))
+  (map titleize ["Hamsters" "Ragnarok"])
+  ;; => ("Hamsters for the Brave and True" "Ragnarok for the Brave and True")
+  (map titleize '("Empathy" "Decorating"))
+  ;; => ("Empathy for the Brave and True" "Decorating for the Brave and True")
+  (map titleize #{"Elbows" "Soap Carving"})
+  ;; => ("Elbows for the Brave and True" "Soap Carving for the Brave and True")
+  (map #(titleize (second %)) {:uncomfortable-thing "Winking"})
+  ;; => ("Winking for the Brave and True")
+
+  ;; convert any collection to sequences
+  (seq '(1 2 3))
+  ;; => (1 2 3)
+  (seq [1 2 3])
+  ;; => (1 2 3)
+  (seq #{1 2 3})
+  ;; => (1 2 3)
+  (seq {:name "Bill Compton" :occupation "Dead mopey guy"})
+  ;; => ([:name "Bill Compton"] [:occupation "Dead mopey guy"])
+
+  ;; map
+  (map inc [1 2 3])
+  ;; => (2 3 4)
+  (map str ["a" "b" "c"] ["A" "B" "C"])
+  ;; => ("aA" "bB" "cC")
+
+  ;; reduce
+  (reduce (fn [new-map [key val]]
+            (assoc new-map key (inc val)))
+          {}
+          {:max 30 :min 10})
+  ;; => {:max 31, :min 11}
+
   )
