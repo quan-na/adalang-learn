@@ -11,7 +11,7 @@
 %include "print_string.a"
 ; Data
 HELLO_MSG:
-  db 'Hello , World!', 0 ; <-- The  zero on the  end  tells  our  routine
+  db 'Hello , World!', 0x0D, 0x0A, 0 ; <-- The  zero on the  end  tells  our  routine
                          ;      when to stop  printing  characters.
 
 GOODBYE_MSG:
