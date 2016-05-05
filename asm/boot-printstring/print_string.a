@@ -1,0 +1,12 @@
+;
+; A simple print string function
+;
+print_string:
+  pusha
+  mov ah, 0x0e
+  mov al, [bx]
+  jz end_print
+  int 0x10
+end_print:
+  popa
+  ret
