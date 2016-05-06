@@ -1,0 +1,16 @@
+;
+; A simple print string function
+;
+print_string:
+  pusha
+  mov ah, 0x0e
+start_print:
+  mov al, [bx]
+  cmp al, 0
+  je end_print
+  int 0x10
+  inc bx
+  jmp start_print
+end_print:
+  popa
+  ret
