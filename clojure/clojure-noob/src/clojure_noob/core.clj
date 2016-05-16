@@ -1,5 +1,10 @@
 (ns clojure-noob.core
-  (:gen-class))
+  (:gen-class)
+  (:use [clojure-noob.my-lib])
+  (:require [clojure-noob.macro-explain])
+  )
+
+(use 'clojure-noob.my-lib)
 
 ;; to run this inside a repl
 ;; => (-main)
@@ -394,4 +399,122 @@
   (concat [1 2] [3 4])
   ;; => (1 2 3 4)
 
+  ;; lazy sequences
+  (def vampire-database
+    {0 {:makes-blood-puns? false, :has-pulse? true  :name "McFishwich"}
+     1 {:makes-blood-puns? false, :has-pulse? true  :name "McMackson"}
+     2 {:makes-blood-puns? true,  :has-pulse? false :name "Damon Salvatore"}
+     3 {:makes-blood-puns? true,  :has-pulse? true  :name "Mickey Mouse"}})
+  (defn vampire-related-details
+    [social-security-number]
+    (Thread/sleep 1000)
+    (get vampire-database social-security-number))
+  (defn vampire?
+    [record]
+    (and (:makes-blood-puns? record)
+         (not (:has-pulse? record))
+         record))
+  (defn identify-vampire
+    [social-security-numbers]
+    (first (filter vampire?
+                   (map vampire-related-details social-security-numbers))))
+
+  (time (vampire-related-details 0))
+  ;; => "Elapsed time: 1001.042 msecs"
+  ;; => {:name "McFishwich", :makes-blood-puns? false, :has-pulse? true}
+  (time (def mapped-details (map vampire-related-details (range 0 1000000))))
+  ;; => "Elapsed time: 0.049 msecs"
+  ;; => #'user/mapped-details
+  (time (first mapped-details))
+  ;; => "Elapsed time: 32030.767 msecs"
+  ;; => {:name "McFishwich", :makes-blood-puns? false, :has-pulse? true}
+  (time (first mapped-details))
+  ;; => "Elapsed time: 0.022 msecs"
+  ;; => {:name "McFishwich", :makes-blood-puns? false, :has-pulse? true}
+  (time (identify-vampire (range 0 1000000)))
+  "Elapsed time: 32019.912 msecs"
+  ;; => {:name "Damon Salvatore", :makes-blood-puns? true, :has-pulse? false}
+
+  ;; infinite sequences
+  (concat (take 8 (repeat "na")) ["Batman!"])
+  ;; => ("na" "na" "na" "na" "na" "na" "na" "na" "Batman!")
+  (take 3 (repeatedly (fn [] (rand-int 10))))
+  ;; => (1 4 0)
+
+  (empty? [])
+  ;; => true
+  (empty? ["no!"])
+  ;; => false
+
+  ;; convert to data structure
+  (into {} (map identity {:sunlight-reaction "Glitter!"}))
+  ;; => {:sunlight-reaction "Glitter!"}
+  (into [] (map identity [:garlic :sesame-oil :fried-eggs]))
+  ;; => [:garlic :sesame-oil :fried-eggs]
+  (into #{} (map identity [:garlic-clove :garlic-clove]))
+  ;; => #{:garlic-clove}
+  (into {:favorite-emotion "gloomy"} [[:sunlight-reaction "Glitter!"]])
+  ;; => {:favorite-emotion "gloomy" :sunlight-reaction "Glitter!"}
+  (into ["cherry"] '("pine" "spruce"))
+  ;; => ["cherry" "pine" "spruce"]
+  (into {:favorite-animal "kitty"} {:least-favorite-smell "dog"
+                                    :relationship-with-teenager "creepy"})
+
+  ;; conjunction
+  (conj [0] 1 2 3 4)
+  ;; => [0 1 2 3 4]
+  (conj {:time "midnight"} [:place "ye olde cemetarium"])
+  ;; => {:place "ye olde cemetarium" :time "midnight"}
+
+  ;; apply
+  (max 0 1 2)
+  ;; => 2
+  (apply max [0 1 2])
+  ;; => 2
+
+  ;; partial
+  (def add10 (partial + 10))
+  (add10 3) 
+  ;; => 13
+  (add10 5) 
+  ;; => 15
+  (def add-missing-elements
+    (partial conj ["water" "earth" "air"]))
+  (add-missing-elements "unobtainium" "adamantium")
+  ;; => ["water" "earth" "air" "unobtainium" "adamantium"]
+
+  ;; complement
+  (defn my-complement
+    [fun]
+    (fn [& args]
+      (not (apply fun args))))
+  (def my-pos? (complement neg?))
+  (my-pos? 1)  
+  ;; => true
+  (my-pos? -1) 
+  ;; => false
+
+  ;; composed functions
+  ((comp inc *) 2 3)
+  ;; => 7
+  (def character
+    {:name "Smooches McCutes"
+     :attributes {:intelligence 10
+                  :strength 4
+                  :dexterity 5}})
+  (def c-int (comp :intelligence :attributes))
+  (c-int character)
+  ;; => 10
+
+  ;; memorize
+  (defn sleepy-identity
+  "Returns the given value after 1 second"
+    [x]
+    (Thread/sleep 1000)
+    x)
+  (def memo-sleepy-identity (memoize sleepy-identity))
+  (memo-sleepy-identity "Mr. Fantastico")
+  ;; => "Mr. Fantastico" after 1 second
+  (memo-sleepy-identity "Mr. Fantastico")
+  ;; => "Mr. Fantastico" immediately
   )
