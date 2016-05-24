@@ -2,6 +2,7 @@
   (:gen-class)
   (:use [clojure-noob.my-lib])
   (:require [clojure-noob.macro-explain])
+  (:require [clojure-noob.concurency])
   )
 
 (use 'clojure-noob.my-lib)
