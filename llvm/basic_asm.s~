@@ -1,0 +1,8 @@
+
+;; identifiers
+%result = mul i32 %X, 8
+%result = shl i32 %X, 3
+
+%0 = add i32 %X, %X           ; yields i32:%0
+%1 = add i32 %0, %0           ; yields i32:%1
+%result = add i32 %1, %1
